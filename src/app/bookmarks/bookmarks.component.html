@@ -1,0 +1,63 @@
+
+<div class="container" fxLayout="column" fxLayoutGap="2vw">
+  <div fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="3vw">
+    <form [formGroup]="bookmarksFG" (submit)="addNewBookmark()" fxFlex=50 fxFlex.lt-md=100 fxLayout="column" fxLayoutGap="1vw">
+      <mat-form-field>
+        <input matInput placeholder="Name*" formControlName="name">
+        <mat-error *ngIf="bookmarksFG.controls.name.errors?.required">
+          This field is required!
+        </mat-error>
+      </mat-form-field>
+      
+      <mat-form-field>
+        <input matInput placeholder="URL*" formControlName="url">
+        <mat-error *ngIf="bookmarksFG.controls.url.errors?.required">
+          This field is required!
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-select placeholder="Group*" formControlName="group">
+          <mat-option *ngFor="let selectOption of groupSelectOptions" value="{{ selectOption.value }}">
+            {{ selectOption.label }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="bookmarksFG.controls.group.errors?.required">
+          This field is required!
+        </mat-error>
+      </mat-form-field>
+
+      <button mat-raised-button type="submit">Add new bookmark</button>
+    </form>
+
+    <mat-card fxFlex fxLayout="row">
+      <div fxFlex fxLayout="column">
+        <h1 *ngIf="!selectedBookmark">No bookmark selected</h1>
+        <h1>{{selectedBookmark?.name}}</h1>
+        <a [href]="selectedBookmark?.url">{{selectedBookmark?.url}}</a>
+        <mat-chip *ngIf="selectedBookmark">{{selectedBookmark?.group}}</mat-chip>
+      </div>
+      <button mat-fab color="warn" aria-label="Delete this bookmark" (click)="removeSelectedBookmark()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </mat-card>
+  </div>
+
+
+  <mat-accordion multi>
+    <mat-expansion-panel *ngFor="let group of groups">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{group.label}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <mat-chip-list aria-label="Fish selection">
+        <mat-chip *ngFor="let bookmark of bookmarksByGroup[group.key]" (removed)="bookmarksService.removeBookmark(bookmark)" (click)="select(bookmark)">
+          {{bookmark.name}}
+          <mat-icon matChipRemove>delete</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
